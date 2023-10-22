@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Boxes</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .desktop {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .icon {
+            width: 100px;
+            height: 100px;
+            position: absolute;
+            cursor: grab;
+        }
+
+        .icon.blue {
+            background-color: #3498db;
+        }
+
+        .icon.green {
+            background-color: #27ae60;
+        }
+
+        .icon.red {
+            background-color: #e74c3c;
+        }
+    </style>
+</head>
+<body>
+    <div class="desktop">
+        <div class="icon blue" id="box1"></div>
+        <div class="icon green" id="box2"></div>
+        <div class="icon red" id="box3"></div>
+    </div>
+
+    <script>
+        function getRandomPosition() {
+            const minX = 0;
+            const minY = 0;
+            const maxX = window.innerWidth - 100; // Adjust for box width
+            const maxY = window.innerHeight - 100; // Adjust for box height
+
+            const randomX = Math.random() * (maxX - minX) + minX;
+            const randomY = Math.random() * (maxY - minY) + minY;
+
+            return {
+                left: randomX + "px",
+                top: randomY + "px",
+            };
+        }
+
+        function initializeDraggableBox(boxId, doubleClickAction) {
+            const box = document.getElementById(boxId);
+            let isDragging = false;
+            let offsetX, offsetY;
+            let clickCount = 0;
+            const doubleClickInterval = 250;
+
+            const startDrag = (e) => {
+                isDragging = true;
+                offsetX = e.clientX - box.getBoundingClientRect().left;
+                offsetY = e.clientY - box.getBoundingClientRect().top;
+                box.style.cursor = "grabbing";
+            };
+
+            const handleDrag = (e) => {
+                if (isDragging) {
+                    box.style.left = e.clientX - offsetX + "px";
+                    box.style.top = e.clientY - offsetY + "px";
+                }
+            };
+
+            const endDrag = () => {
+                isDragging = false;
+                box.style.cursor = "grab";
+            };
+
+            box.addEventListener("mousedown", startDrag);
+            box.addEventListener("touchstart", (e) => {
+                startDrag(e.touches[0]);
+            });
+
+            box.addEventListener("click", (e) => {
+                clickCount++;
+                if (clickCount === 2) {
+                    doubleClickAction();
+                    clickCount = 0;
+                } else {
+                    setTimeout(() => {
+                        if (clickCount === 1) {
+                            // Handle single-click action (if needed)
+                        }
+                        clickCount = 0;
+                    }, doubleClickInterval);
+                }
+            });
+
+            document.addEventListener("mousemove", handleDrag);
+            document.addEventListener("touchmove", (e) => {
+                handleDrag(e.touches[0]);
+            });
+
+            document.addEventListener("mouseup", endDrag);
+            document.addEventListener("touchend", endDrag);
+        }
+
+        // Initialize draggable boxes with random positions and different double-click actions
+        initializeDraggableBox("box1", () => {
+            window.open("https://www.braedensilver.com", "_blank");
+        });
+        initializeDraggableBox("box2", () => {
+            window.open("https://www.example.com", "_blank");
+        });
+        initializeDraggableBox("box3", () => {
+            window.open("https://www.duckduckgo.com", "_blank");
+        });
+
+        // Set random initial positions for the boxes
+        document.getElementById("box1").style.left = getRandomPosition().left;
+        document.getElementById("box1").style.top = getRandomPosition().top;
+
+        document.getElementById("box2").style.left = getRandomPosition().left;
+        document.getElementById("box2").style.top = getRandomPosition().top;
+
+        document.getElementById("box3").style.left = getRandomPosition().left;
+        document.getElementById("box3").style.top = getRandomPosition().top;
+    </script>
+</body>
+</html>
