@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Draggable Windows</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        .desktop {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .icon {
+            position: absolute;
+            cursor: grab;
+            user-select: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 1px 1px 3px #888888;
+        }
+
+        .icon.blue {
+            width: 100px;
+            height: 100px;
+            background-color: #3498db;
+            color: white;
+        }
+
+        .icon.green {
+            width: 100px;
+            height: 100px;
+            background-color: #27ae60;
+            color: white;
+        }
+
+        .icon.red {
+            width: 100px;
+            height: 100px;
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .icon.yellow {
+            width: 100px;
+            height: 100px;
+            background-color: #f1c40f;
+            color: #333;
+        }
+
+        .icon.purple {
+            width: 100px;
+            height: 100px;
+            background-color: #9b59b6;
+            color: white;
+        }
+
+        .window {
+            position: absolute;
+            display: none;
+            background-color: #fff;
+            border: 1px solid #000;
+            resize: both;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .window-content {
+            padding: 10px;
+        }
+
+        .window-titlebar {
+            background-color: #3498db;
+            cursor: grab;
+            user-select: none;
+        }
+
+        .window-title {
+            margin: 0;
+            padding: 0;
+        }
+
+        .window-close {
+            float: right;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            background-color: #e74c3c;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="desktop" id="desktop">
+        <!-- JavaScript will populate icons and windows here -->
+    </div>
+
+    <script>
+        let isDragging = false;
+        let dragElement = null;
+        let offsetX, offsetY;
+
+        function getRandomPosition() {
+            const minX = 0;
+            const minY = 0;
+            const maxX = window.innerWidth - 100; // Adjust for icon width
+            const maxY = window.innerHeight - 100; // Adjust for icon height
+
+            const randomX = Math.random() * (maxX - minX) + minX;
+            const randomY = Math.random() * (maxY - minY) + minY;
+
+            return {
+                left: randomX + "px",
+                top: randomY + "px",
+            };
+        }
+
+        function initializeDraggableElement(element) {
+            element.addEventListener("mousedown", startDrag);
+            element.addEventListener("touchstart", (e) => startDrag(e.touches[0]));
+
+            function startDrag(e) {
+                isDragging = true;
+                dragElement = element;
+                offsetX = e.clientX - dragElement.getBoundingClientRect().left;
+                offsetY = e.clientY - dragElement.getBoundingClientRect().top;
+
+                document.addEventListener("mousemove", handleDrag);
+                document.addEventListener("touchmove", (e) => handleDrag(e.touches[0]));
+                document.addEventListener("mouseup", endDrag);
+                document.addEventListener("touchend", endDrag);
+            }
+
+            function handleDrag(e) {
+                if (isDragging && dragElement) {
+                    dragElement.style.left = e.clientX - offsetX + "px";
+                    dragElement.style.top = e.clientY - offsetY + "px";
+                }
+            }
+
+            function endDrag() {
+                isDragging = false;
+                dragElement = null;
+                document.removeEventListener("mousemove", handleDrag);
+                document.removeEventListener("touchmove", handleDrag);
+                document.removeEventListener("mouseup", endDrag);
+                document.removeEventListener("touchend", endDrag);
+            }
+        }
+
+        function openWindow(windowId) {
+            const window = document.getElementById(windowId);
+            window.style.display = "block";
+
+            // Find the associated icon
+            const iconId = windowId.replace("window", "icon");
+            const icon = document.getElementById(iconId);
+            
+            // Position the window near the icon
+            const iconRect = icon.getBoundingClientRect();
+            window.style.left = iconRect.left + "px";
+            window.style.top = iconRect.top - window.clientHeight + "px";
+        }
+
+        function bringWindowToFront(windowId) {
+            const windows = document.getElementsByClassName("window");
+            for (const window of windows) {
+                if (window.id === windowId) {
+                    window.style.zIndex = 1; // Bring the clicked window to the front
+                } else {
+                    window.style.zIndex = 0;
+                }
+            }
+        }
+
+        function closeWindow(windowId) {
+            const window = document.getElementById(windowId);
+            window.style.display = "none";
+        }
+
+        // Create and initialize icons and windows
+        const desktop = document.getElementById("desktop");
+
+        const iconColors = ["blue", "green", "red", "yellow", "purple"];
+
+        for (let i = 1; i <= iconColors.length; i++) {
+            const icon = document.createElement("div");
+            icon.classList.add("icon", iconColors[i - 1]);
+            icon.style.left = getRandomPosition().left;
+            icon.style.top = getRandomPosition().top;
+            icon.id = `icon${i}`;
+            initializeDraggableElement(icon); // Make icons draggable
+            icon.addEventListener("dblclick", () => {
+                openWindow(`window${i}`);
+                bringWindowToFront(`window${i}`);
+            }); // Double-click to open and bring window to the front
+            desktop.appendChild(icon);
+
+            const window = document.createElement("div");
+            window.classList.add("window");
+            window.id = `window${i}`;
+            window.innerHTML = `
+                <div class="window-titlebar">
+                    <span class="window-title" id="windowTitle${i}">Window ${i}</span>
+                    <span class="window-close" onclick="closeWindow('window${i}')">X</span>
+                </div>
+                <div class="window-content">
+                    <p>This is the content for Window ${i}.</p>
+                </div>
+            `;
+            desktop.appendChild(window);
+            initializeDraggableElement(window); // Make windows draggable
+        }
+    </script>
+</body>
+</html>
