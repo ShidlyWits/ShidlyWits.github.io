@@ -1,17 +1,85 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Error 404</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error 404 - Page Not Found</title>
     <style>
-        /* CSS to resize the image */
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background: #f4f4f4;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            min-height: 130vh;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        p {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            color: #666;
+        }
+
         img {
-            width: 50%; /* Set the width to 50% of the original size */
-            height: auto; /* Maintain the aspect ratio */
+            max-width: 100%;
+            height: auto;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        a {
+            display: inline-block;
+            padding: 10px 25px;
+            margin-top: 20px;
+            font-size: 1rem;
+            color: white;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover, a:focus {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            p {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Error 404, This Page does not exist</h1>
-    <img src="png/troll-face.png" alt="Troll Face Meme">
+    <div class="container">
+        <h1>Oops! Page not found.</h1>
+        <img src="png/troll-face.png" alt="Troll Face Meme">
+        <p>Sorry, but the page you are looking for does not exist, have been removed, or is temporarily unavailable.</p>
+        <a href="http://www.braedensilver.com">Go to Homepage</a>
+    </div>
 </body>
 </html>
