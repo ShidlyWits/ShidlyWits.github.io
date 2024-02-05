@@ -1,7 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Boxes</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Boxes - Explore Draggable Websites</title>
+    <meta name="description" content="Experience interactive draggable boxes. Click on a box to open a website. Fun and engaging way to explore different web pages.">
     <style>
         body {
             margin: 0;
@@ -46,8 +49,8 @@
         function getRandomPosition() {
             const minX = 0;
             const minY = 0;
-            const maxX = window.innerWidth - 100; // Adjust for box width
-            const maxY = window.innerHeight - 100; // Adjust for box height
+            const maxX = window.innerWidth - 100;
+            const maxY = window.innerHeight - 100;
 
             const randomX = Math.random() * (maxX - minX) + minX;
             const randomY = Math.random() * (maxY - minY) + minY;
