@@ -6,7 +6,7 @@
     <title>Interactive Boxes - Explore Draggable Websites</title>
     <meta name="description" content="Experience interactive draggable boxes. Click on a box to open a website. Fun and engaging way to explore different web pages.">
     <style>
-        body {
+        body, html {
             margin: 0;
             padding: 0;
             overflow: hidden;
@@ -25,17 +25,9 @@
             cursor: grab;
         }
 
-        .icon.blue {
-            background-color: #3498db;
-        }
-
-        .icon.green {
-            background-color: #27ae60;
-        }
-
-        .icon.red {
-            background-color: #e74c3c;
-        }
+        .icon.blue { background-color: #3498db; }
+        .icon.green { background-color: #27ae60; }
+        .icon.red { background-color: #e74c3c; }
     </style>
 </head>
 <body>
@@ -47,95 +39,53 @@
 
     <script>
         function getRandomPosition() {
-            const minX = 0;
-            const minY = 0;
             const maxX = window.innerWidth - 100;
             const maxY = window.innerHeight - 100;
-
-            const randomX = Math.random() * (maxX - minX) + minX;
-            const randomY = Math.random() * (maxY - minY) + minY;
-
             return {
-                left: randomX + "px",
-                top: randomY + "px",
+                left: Math.random() * maxX + "px",
+                top: Math.random() * maxY + "px",
             };
         }
 
-        function initializeDraggableBox(boxId, doubleClickAction) {
+        function initializeDraggableBox(boxId, url) {
             const box = document.getElementById(boxId);
-            let isDragging = false;
-            let offsetX, offsetY;
-            let clickCount = 0;
-            const doubleClickInterval = 250;
+            let isDragging = false, offsetX, offsetY, clickTimer = null;
 
-            const startDrag = (e) => {
+            box.style.left = getRandomPosition().left;
+            box.style.top = getRandomPosition().top;
+
+            box.addEventListener("mousedown", (e) => {
                 isDragging = true;
                 offsetX = e.clientX - box.getBoundingClientRect().left;
                 offsetY = e.clientY - box.getBoundingClientRect().top;
                 box.style.cursor = "grabbing";
-            };
+            });
 
-            const handleDrag = (e) => {
-                if (isDragging) {
-                    box.style.left = e.clientX - offsetX + "px";
-                    box.style.top = e.clientY - offsetY + "px";
-                }
-            };
+            document.addEventListener("mousemove", (e) => {
+                if (!isDragging) return;
+                box.style.left = e.clientX - offsetX + "px";
+                box.style.top = e.clientY - offsetY + "px";
+            });
 
-            const endDrag = () => {
+            document.addEventListener("mouseup", () => {
                 isDragging = false;
                 box.style.cursor = "grab";
-            };
-
-            box.addEventListener("mousedown", startDrag);
-            box.addEventListener("touchstart", (e) => {
-                startDrag(e.touches[0]);
             });
 
-            box.addEventListener("click", (e) => {
-                clickCount++;
-                if (clickCount === 2) {
-                    doubleClickAction();
-                    clickCount = 0;
+            box.addEventListener("click", () => {
+                if (clickTimer) {
+                    clearTimeout(clickTimer);
+                    clickTimer = null;
+                    window.open(url, "_blank");
                 } else {
-                    setTimeout(() => {
-                        if (clickCount === 1) {
-                            // Handle single-click action (if needed)
-                        }
-                        clickCount = 0;
-                    }, doubleClickInterval);
+                    clickTimer = setTimeout(() => { clickTimer = null; }, 200);
                 }
             });
-
-            document.addEventListener("mousemove", handleDrag);
-            document.addEventListener("touchmove", (e) => {
-                handleDrag(e.touches[0]);
-            });
-
-            document.addEventListener("mouseup", endDrag);
-            document.addEventListener("touchend", endDrag);
         }
 
-        // Initialize draggable boxes with random positions and different double-click actions
-        initializeDraggableBox("box1", () => {
-            window.open("https://www.braedensilver.com", "_blank");
-        });
-        initializeDraggableBox("box2", () => {
-            window.open("https://www.example.com", "_blank");
-        });
-        initializeDraggableBox("box3", () => {
-            window.open("https://www.duckduckgo.com", "_blank");
-        });
-
-        // Set random initial positions for the boxes
-        document.getElementById("box1").style.left = getRandomPosition().left;
-        document.getElementById("box1").style.top = getRandomPosition().top;
-
-        document.getElementById("box2").style.left = getRandomPosition().left;
-        document.getElementById("box2").style.top = getRandomPosition().top;
-
-        document.getElementById("box3").style.left = getRandomPosition().left;
-        document.getElementById("box3").style.top = getRandomPosition().top;
+        initializeDraggableBox("box1", "https://www.braedensilver.com");
+        initializeDraggableBox("box2", "https://www.example.com");
+        initializeDraggableBox("box3", "https://www.duckduckgo.com");
     </script>
 </body>
 </html>
